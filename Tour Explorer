@@ -1,0 +1,75 @@
+import random
+
+
+class TourPlanner:
+    def __init__(self, catalog):
+        self.catalog = catalog
+        self.generated_tour = []
+
+    def generate_tour_route(self, max_duration, max_cost):
+        self.generated_tour = []  # Clear the list before generating a new tour
+        remaining_duration = max_duration
+        remaining_cost = max_cost
+
+        available_activities = list(self.catalog.keys())
+        random.shuffle(available_activities)
+
+        for activity_id in available_activities:
+            activity_name, activity_duration, activity_cost = self.catalog[activity_id]
+
+            if activity_duration <= remaining_duration and activity_cost <= remaining_cost:
+                self.generated_tour.append(activity_id)
+                remaining_duration -= activity_duration
+                remaining_cost -= activity_cost
+
+                if len(self.generated_tour) == 4:
+                    break
+
+        if len(self.generated_tour) == 4:
+            return True
+        else:
+            return False
+
+    def display_generated_tour(self):
+        total_duration = sum(self.catalog[activity_id][1] for activity_id in self.generated_tour)
+        total_cost = sum(self.catalog[activity_id][2] for activity_id in self.generated_tour)
+
+        print("Total tour time:", total_duration, "hours")
+        print("Total cost: $", total_cost)
+        print("List of activities:", ", ".join(self.catalog[activity_id][0] for activity_id in self.generated_tour))
+
+
+# Example catalog of activities
+complete_catalog = {
+    1: ["Malecón 2000", 2, 6.50],
+    2: ["Las Peñas", 3, 6],
+    3: ["Pirate Ship Morgan", 2, 12.25],
+    4: ["Panoramic Tour", 2, 12],
+    5: ["Museums", 3, 10],
+    6: ["Historic Park", 4, 10],
+    7: ["Salt Mine", 3, 6],
+    8: ["IMAX", 3, 8.15]
+}
+
+tour_planner = TourPlanner(complete_catalog)
+
+while True:
+    print("Menu:")
+    print("a. Generate tour route")
+    print("b. Display the generated tour on screen")
+    choice = input("Enter your choice: ")
+
+    if choice == 'a':
+        max_duration = int(input("Enter the maximum duration in hours: "))
+        max_cost = float(input("Enter the maximum cost: "))
+
+        if tour_planner.generate_tour_route(max_duration, max_cost):
+            print("The tour route has been successfully generated.")
+        else:
+            print("An error occurred in generating the route.")
+
+    elif choice == 'b':
+        tour_planner.display_generated_tour()
+
+    else:
+        print("Invalid choice. Please select either 'a' or 'b'.")
